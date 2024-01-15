@@ -9,6 +9,8 @@ import {
   TextField,
   Box,
   MenuItem,
+  Button,
+  FormHelperText
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -88,8 +90,9 @@ export function SettingsForm() {
       }}>
       <Typography variant="h6">Options</Typography>
 
-      <TextField variant="standard" type="password" label="API key" />
-
+      <TextField  variant="standard" type="password" label="API key" />
+      <Button variant='outlined' sx={{width: '50px'}}>Apply</Button>
+      
       <Typography>API Settings</Typography>
       <Box
         sx={{
@@ -100,7 +103,6 @@ export function SettingsForm() {
         <TextField
           sx={{ width: '32%' }}
           variant="standard"
-          type="password"
           label="Organization Id"
           helperText={'Organization IDs can be found on your organization settings page. completion.'}
         />
@@ -114,7 +116,7 @@ export function SettingsForm() {
         <TextField
           sx={{ width: '32%' }}
           variant="standard"
-          type="password"
+          type="number"
           label="Temperature"
           helperText="What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the outpu more random, while lower values like 0.2 will make it more focused and deterministic."
         />
@@ -122,7 +124,9 @@ export function SettingsForm() {
       <FormControl fullWidth>
         <InputLabel id="ModelLabel">Model</InputLabel>
         <Select
-          variant="standard"
+          error = {!GptModels}
+          placeholder="Select Model"
+          variant="outlined"
           labelId="ModelLabel"
           id="ModelLabelSelect"
           value={model}
@@ -138,13 +142,16 @@ export function SettingsForm() {
                 );
               }
             })
-          ) : (
-            <MenuItem>Error while loading models. Please check your API Key</MenuItem>
+          ) : (<></>
+            // <MenuItem>Error while loading models. Please check your API Key</MenuItem>
           )}
         </Select>
+        {GptModels ? <></> : <FormHelperText>Error while loading models. Please check your API Key</FormHelperText>}
       </FormControl>
 
-      <FormControlLabel control={<Switch />} label="Hit <enter> automatically send question to chatGPT" />
+      <Button variant='outlined' sx={{
+        width: '50px'
+      }}>Save</Button>
     </Paper>
   );
 }
