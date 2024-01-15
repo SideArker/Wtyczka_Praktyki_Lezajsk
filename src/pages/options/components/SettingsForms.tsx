@@ -10,26 +10,30 @@ import {
   Box,
   MenuItem,
 } from '@mui/material';
-import { FormProvider, useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import InputAdornment from '@mui/material/InputAdornment';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { Console } from 'console';
-
-interface IFormInput {
-  textValue: string;
-  radioValue: string;
-  checkboxValue: string[];
-  dateValue: Date;
-  dropdownValue: string;
-  sliderValue: number;
-}
 
 interface IModel {
   id: string;
   object: string;
   created: number;
   owned_by: string;
+}
+
+class Settings {
+  apiKey: string;
+  organizationId: string;
+  tokensCount: number;
+  temperature: number;
+  modelId: string;
+
+  constructor(apiKey: string, organizationId: string, tokensCount: number, temperature: number, modelId: string) {
+    this.apiKey = apiKey;
+    this.organizationId = organizationId;
+    this.tokensCount = tokensCount;
+    this.temperature = temperature;
+    this.modelId = modelId;
+  }
 }
 
 const defaultValues = {
@@ -40,21 +44,34 @@ const defaultValues = {
   dropdownValue: '',
   sliderValue: 0,
 };
-export const SettingsForm = () => {
-  const methods = useForm<IFormInput>({ defaultValues: defaultValues });
-  const { handleSubmit, reset, control, setValue, watch } = methods;
-  const onSubmit = (data: IFormInput) => console.log(data);
 
+function SaveData(data: Settings) {
+  const storage = chrome.storage.sync;
+  storage.set({ settingsData: data });
+}
+
+function LoadData() {
+  const storage = chrome.storage.sync;
+  storage.get('settingsData', function (data) {
+    console.log(data);
+  });
+}
+
+export function SettingsForm() {
   const [model, setModel] = useState('');
   const [GptModels, setGptModels] = useState([]);
 
-  useEffect(() => {
-    fetch('https://api.openai.com/v1/models')
-      .then(response => response.json())
-      .then(res => setGptModels(res.data));
-  }, []);
+  function FetchModels() {
+    useEffect(() => {
+      fetch('https://api.openai.com/v1/models')
+        .then(response => response.json())
+        .then(res => setGptModels(res.data));
+    }, []);
+  }
 
-  console.log(GptModels);
+  FetchModels();
+
+  LoadData();
 
   const handleDropdownChange = (event: SelectChangeEvent) => {
     setModel(event.target.value as string);
@@ -68,7 +85,6 @@ export const SettingsForm = () => {
         gridRowGap: '20px',
         padding: '20px',
         height: '100%',
-        // margin: "10px 300px",
       }}>
       <Typography variant="h6">Options</Typography>
 
@@ -105,20 +121,30 @@ export const SettingsForm = () => {
       </Box>
       <FormControl fullWidth>
         <InputLabel id="ModelLabel">Model</InputLabel>
-        <Select variant="standard" labelId="ModelLabel" id="ModelLabelSelect" value={model} label="Model" onChange={handleDropdownChange}>
-          {(GptModels) ? GptModels.map((model: IModel) => {
-            if (model.owned_by === 'openai' || model.owned_by === 'openai-internal') {
-              return (
-                <MenuItem key={model.id} value={model.id}>
-                  {model.id}
-                </MenuItem>
-              );
-            }
-          }) : <MenuItem>Models Missing</MenuItem>}
+        <Select
+          variant="standard"
+          labelId="ModelLabel"
+          id="ModelLabelSelect"
+          value={model}
+          label="Model"
+          onChange={handleDropdownChange}>
+          {GptModels ? (
+            GptModels.map((model: IModel) => {
+              if (model.owned_by === 'openai' || model.owned_by === 'openai-internal') {
+                return (
+                  <MenuItem key={model.id} value={model.id}>
+                    {model.id}
+                  </MenuItem>
+                );
+              }
+            })
+          ) : (
+            <MenuItem>Error while loading models. Please check your API Key</MenuItem>
+          )}
         </Select>
       </FormControl>
 
       <FormControlLabel control={<Switch />} label="Hit <enter> automatically send question to chatGPT" />
     </Paper>
   );
-};
+}
