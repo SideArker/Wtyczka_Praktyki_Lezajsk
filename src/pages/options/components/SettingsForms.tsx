@@ -14,6 +14,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { Console } from 'console';
 
 interface IFormInput {
   textValue: string;
@@ -104,8 +105,8 @@ export const SettingsForm = () => {
       </Box>
       <FormControl fullWidth>
         <InputLabel id="ModelLabel">Model</InputLabel>
-        <Select labelId="ModelLabel" id="ModelLabelSelect" value={model} label="Model" onChange={handleDropdownChange}>
-          {GptModels.map((model: IModel) => {
+        <Select variant="standard" labelId="ModelLabel" id="ModelLabelSelect" value={model} label="Model" onChange={handleDropdownChange}>
+          {(GptModels) ? GptModels.map((model: IModel) => {
             if (model.owned_by === 'openai' || model.owned_by === 'openai-internal') {
               return (
                 <MenuItem key={model.id} value={model.id}>
@@ -113,7 +114,7 @@ export const SettingsForm = () => {
                 </MenuItem>
               );
             }
-          })}
+          }) : <MenuItem>Models Missing</MenuItem>}
         </Select>
       </FormControl>
 
