@@ -10,7 +10,8 @@ import {
   Box,
   MenuItem,
   Button,
-  FormHelperText
+  FormHelperText,
+  Grid
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -90,9 +91,9 @@ export function SettingsForm() {
       }}>
       <Typography variant="h6">Options</Typography>
 
-      <TextField  variant="standard" type="password" label="API key" />
-      <Button variant='outlined' sx={{width: '50px'}}>Apply</Button>
-      
+      <TextField variant="standard" type="password" label="API key" />
+      <Button variant='outlined' sx={{ width: '50px' }}>Apply</Button>
+
       <Typography>API Settings</Typography>
       <Box
         sx={{
@@ -123,29 +124,41 @@ export function SettingsForm() {
       </Box>
       <FormControl fullWidth>
         <InputLabel id="ModelLabel">Model</InputLabel>
-        <Select
-          error = {!GptModels}
-          placeholder="Select Model"
-          variant="outlined"
-          labelId="ModelLabel"
-          id="ModelLabelSelect"
-          value={model}
-          label="Model"
-          onChange={handleDropdownChange}>
-          {GptModels ? (
-            GptModels.map((model: IModel) => {
-              if (model.owned_by === 'openai' || model.owned_by === 'openai-internal') {
-                return (
-                  <MenuItem key={model.id} value={model.id}>
-                    {model.id}
-                  </MenuItem>
-                );
-              }
-            })
-          ) : (<></>
-            // <MenuItem>Error while loading models. Please check your API Key</MenuItem>
-          )}
-        </Select>
+        <Grid container>
+          <Grid item sx={{width: '90%'}}>
+
+            <Select 
+              fullWidth            
+              error={!GptModels}
+              placeholder="Select Model"
+              variant="outlined"
+              labelId="ModelLabel"
+              id="ModelLabelSelect"
+              value={model}
+              label="Model"
+              onChange={handleDropdownChange}>
+              {GptModels ? (
+                GptModels.map((model: IModel) => {
+                  if (model.owned_by === 'openai' || model.owned_by === 'openai-internal') {
+                    return (
+                      <MenuItem key={model.id} value={model.id}>
+                        {model.id}
+                      </MenuItem>
+                    );
+                  }
+                })
+              ) : (<></>
+                // <MenuItem>Error while loading models. Please check your API Key</MenuItem>
+              )}
+            </Select>
+          </Grid>
+          <Grid item alignItems="stretch" style={{ display: "flex" }}>
+            <Button variant="outlined" sx={{mx: 2}}>
+              Refresh
+            </Button>
+          </Grid>
+        </Grid>
+
         {GptModels ? <></> : <FormHelperText>Error while loading models. Please check your API Key</FormHelperText>}
       </FormControl>
 
