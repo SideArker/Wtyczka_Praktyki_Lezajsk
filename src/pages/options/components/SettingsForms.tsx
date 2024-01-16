@@ -114,6 +114,8 @@ export function SettingsForm() {
     SaveData(new Settings(key, organizationId, tokens, temperature, model));
   }
 
+  const onSaveSettings = () => SaveData(new Settings(key, organizationId, tokens, temperature, model));
+
   return (
     <Paper
       elevation={3}
@@ -170,7 +172,7 @@ export function SettingsForm() {
           <Grid item sx={{ width: '90%' }}>
             <Select
               fullWidth
-              error={GptModels.length < 1}
+              error={!GptModels}
               placeholder="Select Model"
               variant="outlined"
               labelId="ModelLabel"
@@ -179,23 +181,19 @@ export function SettingsForm() {
               label="Model"
               onChange={handleDropdownChange}>
               {GptModels ? (
-                GptModels.length > 0 ? (
-                  GptModels.map((model: IModel) => {
-                    if (model.owned_by === 'openai' || model.owned_by === 'openai-internal') {
-                      return (
-                        <MenuItem key={model.id} value={model.id}>
-                          {model.id}
-                        </MenuItem>
-                      );
-                    }
-                  })
-                ) : (
-                  <>
-                    <MenuItem>Error while loading models. Please check your API Key</MenuItem>
-                  </>
-                )
+                GptModels.map((model: IModel) => {
+                  if (model.owned_by === 'openai' || model.owned_by === 'openai-internal') {
+                    return (
+                      <MenuItem key={model.id} value={model.id}>
+                        {model.id}
+                      </MenuItem>
+                    );
+                  }
+                })
               ) : (
-                <></>
+                <>
+                  <MenuItem>Error while loading models. Please check your API Key</MenuItem>
+                </>
               )}
             </Select>
           </Grid>
@@ -206,11 +204,7 @@ export function SettingsForm() {
           </Grid>
         </Grid>
 
-        {GptModels.length > 0 ? (
-          <></>
-        ) : (
-          <FormHelperText>Error while loading models. Please check your API Key</FormHelperText>
-        )}
+        {GptModels ? <></> : <FormHelperText>Error while loading models. Please check your API Key</FormHelperText>}
       </FormControl>
 
       <Button
@@ -218,7 +212,7 @@ export function SettingsForm() {
         sx={{
           width: '50px',
         }}
-        onClick={() => SaveData(new Settings(key, organizationId, tokens, temperature, model))}>
+        onClick={onSaveSettings}>
         Save
       </Button>
     </Paper>
