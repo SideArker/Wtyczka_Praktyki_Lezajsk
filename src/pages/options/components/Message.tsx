@@ -1,7 +1,10 @@
 import { Typography } from "@mui/material";
 import React from "react";
 
-export function UserMessage(props: any) {
+type MessageProps = {text: String}
+
+
+export function UserMessage(props: MessageProps) {
   return (
     <Typography sx={{
       m: 2,
@@ -14,7 +17,7 @@ export function UserMessage(props: any) {
   );
 }
 
-export function ChatMessage(props: any) {
+export function ChatMessage(props: MessageProps) {
   return (
     <Typography sx={{
       m: 2,

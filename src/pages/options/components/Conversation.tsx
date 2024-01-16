@@ -15,7 +15,7 @@ export default function Conversation() {
   const chatColor = '#aaff00';
   return (
     <Paper sx={{
-      minHeight: '800px',
+      minHeight: '100vh',
       p: 1,
       // width: '50%'
     }}>
@@ -33,8 +33,8 @@ export default function Conversation() {
             </Button>
           </Grid>
         </Grid>
-        <UserMessage text={"Testowa wiadomość użytkownika"}/>
-        <ChatMessage text={"Testowa odpowiedź AI"}/>
+        <UserMessage text="Testowa wiadomość użytkownika"/>
+        <ChatMessage text="Testowa odpowiedź AI"/>
       </FormControl>
     </Paper>
   );
