@@ -153,7 +153,7 @@ export function SettingsForm() {
             </Select>
           </Grid>
           <Grid item alignItems="stretch" style={{ display: "flex" }}>
-            <Button variant="outlined" sx={{mx: 2}}>
+            <Button variant="outlined" sx={{ml: 2}}>
               Refresh
             </Button>
           </Grid>
