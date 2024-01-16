@@ -182,7 +182,7 @@ export function SettingsForm() {
               onChange={handleDropdownChange}>
               {GptModels ? (
                 GptModels.map((model: IModel) => {
-                  if (model.owned_by === 'openai' || model.owned_by === 'openai-internal') {
+                  if (model.owned_by === 'openai') {
                     return (
                       <MenuItem key={model.id} value={model.id}>
                         {model.id}
