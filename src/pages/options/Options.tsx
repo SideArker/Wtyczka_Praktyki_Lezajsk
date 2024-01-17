@@ -1,8 +1,21 @@
 import React from 'react';
-import '@pages/options/Options.css';
+import { SettingsForm } from './components/SettingsForms';
+import { ThemeProvider, createTheme, Box } from '@mui/material';
+import Conversation from './components/Conversation'
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
 
 const Options: React.FC = () => {
-  return <div className="container">Options</div>;
+  return <ThemeProvider theme={darkTheme}>
+    <Box className="container">
+      <SettingsForm />
+      {/* <Conversation/> */}
+    </Box>
+  </ThemeProvider>;
 };
 
 export default Options;
