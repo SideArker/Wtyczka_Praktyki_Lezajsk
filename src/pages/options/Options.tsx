@@ -13,7 +13,7 @@ const Options: React.FC = () => {
   return <ThemeProvider theme={darkTheme}>
     <Box className="container">
       <SettingsForm />
-      {/* <Conversation/> */}
+      <Conversation/>
     </Box>
   </ThemeProvider>;
 };
