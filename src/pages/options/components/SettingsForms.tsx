@@ -15,8 +15,6 @@ import {
 } from '@mui/material';
 import { useState, useEffect, useRef } from 'react';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import openai from 'openai';
-
 interface IModel {
   id: string;
   object: string;
@@ -55,6 +53,7 @@ export function SettingsForm() {
   const tokenRef = useRef(null);
   const temperatureRef = useRef(null);
   const modelRef = useRef(null);
+
   const [key, setKey] = useState('');
   const [organizationId, setOrganizationId] = useState('');
   const [tokens, setTokens] = useState(0);
