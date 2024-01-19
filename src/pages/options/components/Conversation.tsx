@@ -10,24 +10,24 @@ export default function Conversation() {
   const [temperature, setTemperature] = useState(0);
   const [model, setModel] = useState('');
 
-  const [GptModels, setMessage] = useState([]);
+  const [textMessage, setMessage] = useState('');
 
-  const [value, setValue] = useState('');
   const handleChange = e => {
-    setValue(e.target.value);
+    setMessage(e.target.value);
   };
 
   const SendPropmpt = () => {
     fetch(`https://api.openai.com/v1/chat/completions`, {
-      method: 'post',
+      method: 'POST',
       headers: new Headers({
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${key}`,
       }),
       body: JSON.stringify({
         model: `${model}`,
         messages: {
           role: 'user',
-          content: `${value}`,
+          content: `${textMessage}`,
         },
       }),
     })
@@ -57,7 +57,7 @@ export default function Conversation() {
       <FormControl fullWidth sx={{}}>
         <Grid container sx={{ m: 2 }}>
           <Grid item sx={{ width: '90%' }}>
-            <TextField fullWidth variant="outlined" value={value} onChange={handleChange}></TextField>
+            <TextField fullWidth variant="outlined" value={textMessage} onChange={handleChange}></TextField>
           </Grid>
           <Grid item alignItems="stretch" style={{ display: 'flex' }}>
             <Button variant="outlined" sx={{ mx: 2 }} onClick={SendPropmpt}>
