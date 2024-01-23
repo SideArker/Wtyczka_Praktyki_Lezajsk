@@ -12,7 +12,7 @@ const darkTheme = createTheme({
 const Options: React.FC = () => {
   return <ThemeProvider theme={darkTheme}>
     <Box className="container">
-      <SettingsForm />
+      {/* <SettingsForm /> */}
       <Conversation/>
     </Box>
   </ThemeProvider>;

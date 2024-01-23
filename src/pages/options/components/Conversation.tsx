@@ -1,7 +1,8 @@
 import { Button, Container, TextField, Grid, FormControl, Paper, Typography } from '@mui/material';
 import React from 'react';
-import { ChatMessage, UserMessage } from './Message';
+import ChatMessage from './Message';
 import { useState, useEffect, useRef } from 'react';
+import './Conversation.css';
 
 export default function Conversation() {
   const [key, setKey] = useState('');
@@ -48,26 +49,40 @@ export default function Conversation() {
   }, []);
 
   return (
-    <Paper
-      sx={{
-        minHeight: '100vh',
-        p: 1,
-        // width: '50%'
-      }}>
-      <FormControl fullWidth sx={{}}>
-        <Grid container sx={{ m: 2 }}>
-          <Grid item sx={{ width: '90%' }}>
-            <TextField fullWidth variant="outlined" value={textMessage} onChange={handleChange}></TextField>
-          </Grid>
-          <Grid item alignItems="stretch" style={{ display: 'flex' }}>
-            <Button variant="outlined" sx={{ mx: 2 }} onClick={SendPropmpt}>
-              Send
-            </Button>
-          </Grid>
-        </Grid>
-        <UserMessage text="Testowa wiadomość użytkownika" />
-        <ChatMessage text="Testowa odpowiedź AI" />
-      </FormControl>
-    </Paper>
+    <Container>
+      <main>
+
+        {/* {messages && messages.map(msg => <ChatMessage key={msg.id} message={msg} />)} */}
+        <ChatMessage message={{ text: 'hdfsafkajsd', isMine: false }} />
+        <ChatMessage message={{ text: 'hdfsafkajsd', isMine: true }} />
+        <ChatMessage message={{ text: 'hdfsafkajsd', isMine: false }} />
+        <ChatMessage message={{ text: 'hdfsafkajsd', isMine: true }} />
+
+        <span></span>
+
+      </main>
+
+      <form>
+
+        <TextField placeholder="say something nice" sx={{
+          lineHeight: '1.5',
+          width: 'inherit',
+          fontSize: '1.5rem',
+          bgcolor: 'rgb(58, 58, 58)',
+          color: 'white',
+          outline: 'none',
+          border: 'none',
+          // padding: '0 10px',
+
+        }} />
+
+        <Button type="submit" variant='contained' sx={{
+          width: '20%',
+          bgcolor: 'primary.main',
+          mx: 1
+        }}>🕊️</Button>
+
+      </form>
+    </Container>
   );
 }
