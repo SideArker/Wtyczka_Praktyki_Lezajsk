@@ -2,6 +2,7 @@ import { Button, Container, TextField, Grid, FormControl, Paper, Typography, Dra
 import React from 'react';
 import ChatMessage from './Message';
 import { useState, useEffect, useRef } from 'react';
+import SendIcon from '@mui/icons-material/Send';
 
 interface Message {
   text: string;
@@ -108,8 +109,9 @@ export default function Conversation() {
           width: '20%',
           bgcolor: 'primary.main',
           mx: 1,
-        }}>
-        🕊️
+        }}
+        endIcon={<SendIcon />}>
+        Send
       </Button>
     </Container>
   );
