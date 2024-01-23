@@ -1,7 +1,8 @@
 import React from 'react';
 import { SettingsForm } from './components/SettingsForms';
-import { ThemeProvider, createTheme, Box } from '@mui/material';
-import Conversation from './components/Conversation'
+import { ThemeProvider, createTheme, Box, Drawer } from '@mui/material';
+import Conversation from './components/Conversation';
+import TemporaryDrawer from './components/Drawer';
 
 const darkTheme = createTheme({
   palette: {
@@ -10,12 +11,21 @@ const darkTheme = createTheme({
 });
 
 const Options: React.FC = () => {
-  return <ThemeProvider theme={darkTheme}>
-    <Box className="container">
-      {/* <SettingsForm /> */}
-      <Conversation/>
-    </Box>
-  </ThemeProvider>;
+  const [page, setPage] = React.useState('');
+
+  const getCurrentPage = page => {
+    console.log('Data received in parent:', page);
+    setPage(page);
+  };
+
+  return (
+    <ThemeProvider theme={darkTheme}>
+      <Box className="container">
+        <TemporaryDrawer pageCallback={getCurrentPage} />
+        {page === 'Options' ? <SettingsForm /> : <Conversation />}
+      </Box>
+    </ThemeProvider>
+  );
 };
 
 export default Options;
