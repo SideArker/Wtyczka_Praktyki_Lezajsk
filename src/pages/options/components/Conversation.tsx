@@ -2,6 +2,11 @@ import { Button, Container, TextField, Grid, FormControl, Paper, Typography } fr
 import React from 'react';
 import ChatMessage from './Message';
 import { useState, useEffect, useRef } from 'react';
+
+interface Message {
+  text: string;
+  sender: 'user' | 'assistant';
+}
 import './Conversation.css';
 
 export default function Conversation() {
@@ -11,29 +16,51 @@ export default function Conversation() {
   const [temperature, setTemperature] = useState(0);
   const [model, setModel] = useState('');
 
-  const [textMessage, setMessage] = useState('');
+  const [userInput, setUserInput] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const handleChange = e => {
-    setMessage(e.target.value);
+    setUserInput(e.target.value);
   };
 
-  const SendPropmpt = () => {
-    fetch(`https://api.openai.com/v1/chat/completions`, {
-      method: 'POST',
-      headers: new Headers({
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${key}`,
-      }),
-      body: JSON.stringify({
-        model: `${model}`,
-        messages: {
-          role: 'user',
-          content: `${textMessage}`,
-        },
-      }),
-    })
-      .then(response => response.json())
-      .then(res => console.log(res));
+  const SendPrompt = async () => {
+    if (userInput === '') return;
+    const userMessage: Message = { text: userInput, sender: 'user' };
+    setMessages(prevMessages => [...prevMessages, userMessage]);
+
+    try {
+      const response = await fetch(`https://api.openai.com/v1/chat/completions`, {
+        method: 'POST',
+        headers: new Headers({
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${key}`,
+        }),
+        body: JSON.stringify({
+          model: `${model}`,
+          messages: [
+            {
+              role: 'system',
+              content:
+                'You are a helpful assistant. Try to mainly speak in english unless prompted directly by a different language.',
+            },
+            {
+              role: 'user',
+              content: `${userInput}`,
+            },
+          ],
+        }),
+      });
+      if (response.ok) {
+        const data: ChatCompletion = await response.json();
+        const botMessage: Message = { text: data.choices[0].message.content, sender: 'assistant' };
+        setMessages(prevMessages => [...prevMessages, botMessage]);
+        console.log(botMessage);
+      } else {
+        console.error('Error calling OpenAI API');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   // Load data
@@ -49,22 +76,20 @@ export default function Conversation() {
   }, []);
 
   return (
-    <Container>
+    <Container sx={{ bgcolor: '#282828' }}>
       <main>
-
-        {/* {messages && messages.map(msg => <ChatMessage key={msg.id} message={msg} />)} */}
-        <ChatMessage message={{ text: 'hdfsafkajsd', isMine: false }} />
-        <ChatMessage message={{ text: 'hdfsafkajsd', isMine: true }} />
-        <ChatMessage message={{ text: 'hdfsafkajsd', isMine: false }} />
-        <ChatMessage message={{ text: 'hdfsafkajsd', isMine: true }} />
-
+        {messages.map((message, index) => {
+          if (message.sender == 'user') {
+            return <ChatMessage message={{ text: message.text, isUser: true }} />;
+          } else return <ChatMessage message={{ text: message.text, isUser: false }} />;
+        })}
         <span></span>
-
       </main>
 
-      <form>
-
-        <TextField placeholder="say something nice" sx={{
+      <TextField
+        placeholder="say something nice"
+        onChange={handleChange}
+        sx={{
           lineHeight: '1.5',
           width: 'inherit',
           fontSize: '1.5rem',
@@ -72,17 +97,20 @@ export default function Conversation() {
           color: 'white',
           outline: 'none',
           border: 'none',
-          // padding: '0 10px',
+        }}
+      />
 
-        }} />
-
-        <Button type="submit" variant='contained' sx={{
+      <Button
+        type="button"
+        variant="contained"
+        onClick={SendPrompt}
+        sx={{
           width: '20%',
           bgcolor: 'primary.main',
-          mx: 1
-        }}>🕊️</Button>
-
-      </form>
+          mx: 1,
+        }}>
+        🕊️
+      </Button>
     </Container>
   );
 }
