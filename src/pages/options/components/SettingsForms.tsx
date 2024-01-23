@@ -108,11 +108,6 @@ export function SettingsForm() {
     setModel(event.target.value);
   };
 
-  function saveApiKey() {
-    setKey(keyRef.current.value);
-    SaveData(new Settings(key, organizationId, tokens, temperature, model));
-  }
-
   const onSaveSettings = () => SaveData(new Settings(key, organizationId, tokens, temperature, model));
 
   return (
@@ -126,12 +121,15 @@ export function SettingsForm() {
       }}>
       <Typography variant="h6">Options</Typography>
 
-      <TextField variant="standard" type="password" label="API key" inputRef={keyRef} />
-      <Button variant="outlined" sx={{ width: '50px' }} onClick={saveApiKey}>
-        Apply
-      </Button>
+      <TextField
+        variant="standard"
+        type="password"
+        label="API key"
+        inputRef={keyRef}
+        onChange={event => setKey(event.target.value)}
+      />
 
-      <Typography>API Settings</Typography>
+      <Typography variant="h6">API Settings</Typography>
       <Box
         sx={{
           display: 'flex',
