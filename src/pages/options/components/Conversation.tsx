@@ -46,6 +46,7 @@ export default function Conversation() {
         method: 'POST',
         headers: new Headers({
           'Content-Type': 'application/json',
+          'OpenAI-Organization': organizationId,
           Authorization: `Bearer ${key}`,
         }),
         body: JSON.stringify({
@@ -62,12 +63,10 @@ export default function Conversation() {
               content: `${prompt}`,
             },
           ],
-          organization_id: organizationId,
           max_tokens: tokens,
           temperature: temperature,
         }),
       });
-      console.log(conversationHistory);
       if (response.ok) {
         const data: ChatCompletion = await response.json();
         const botMessage: Message = { text: data.choices[0].message.content, sender: 'assistant' };
