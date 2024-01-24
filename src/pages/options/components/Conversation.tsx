@@ -1,14 +1,14 @@
-import { Button, Container, TextField, Grid, FormControl, Paper, Typography, Drawer } from '@mui/material';
+import { Button, Box, Container, TextField, Grid, FormControl, Paper, Typography, Drawer } from '@mui/material';
 import React from 'react';
 import ChatMessage from './Message';
 import { useState, useEffect, useRef } from 'react';
 import SendIcon from '@mui/icons-material/Send';
+import './Conversation.css';
 
 interface Message {
   text: string;
   sender: 'user' | 'assistant';
 }
-import './Conversation.css';
 
 export default function Conversation() {
   const [key, setKey] = useState('');
@@ -77,42 +77,46 @@ export default function Conversation() {
   }, []);
 
   return (
-    <Container sx={{ bgcolor: '#282828' }}>
-      <main>
-        {messages.map((message, index) => {
-          if (message.sender == 'user') {
-            return <ChatMessage message={{ text: message.text, isUser: true }} />;
-          } else return <ChatMessage message={{ text: message.text, isUser: false }} />;
-        })}
-        <span></span>
-      </main>
+    <Container>
+      <Paper className='main'>
+        
+          {messages.map((message, index) => {
+            if (message.sender == 'user') {
+              return <ChatMessage message={{ text: message.text, isUser: true }} />;
+            } else return <ChatMessage message={{ text: message.text, isUser: false }} />;
+          })}
+          <span></span>
+        
 
-      <TextField
-        placeholder="say something nice"
-        onChange={handleChange}
-        sx={{
-          lineHeight: '1.5',
-          width: 'inherit',
-          fontSize: '1.5rem',
-          bgcolor: 'rgb(58, 58, 58)',
-          color: 'white',
-          outline: 'none',
-          border: 'none',
-        }}
-      />
+      </Paper>
+      <Box className="form">
+        <TextField
+          placeholder="say something nice"
+          onChange={handleChange}
+          sx={{
+            lineHeight: '1.5',
+            width: 'inherit',
+            fontSize: '1.5rem',
+            bgcolor: 'rgb(58, 58, 58)',
+            color: 'white',
+            outline: 'none',
+            border: 'none',
+          }}
+        />
 
-      <Button
-        type="button"
-        variant="contained"
-        onClick={SendPrompt}
-        sx={{
-          width: '20%',
-          bgcolor: 'primary.main',
-          mx: 1,
-        }}
-        endIcon={<SendIcon />}>
-        Send
-      </Button>
+        <Button
+          type="button"
+          variant="contained"
+          onClick={SendPrompt}
+          sx={{
+            width: '20%',
+            bgcolor: 'primary.main',
+            ml: 1,
+          }}
+          endIcon={<SendIcon />}>
+          Send
+        </Button>
+      </Box>
     </Container>
   );
 }

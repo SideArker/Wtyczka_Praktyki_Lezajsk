@@ -12,9 +12,15 @@ import {
   Button,
   FormHelperText,
   Grid,
+  Container,
+  makeStyles,
 } from '@mui/material';
 import { useState, useEffect, useRef } from 'react';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import './SettingsForm.css';
+import { red } from '@mui/material/colors';
+
+
 interface IModel {
   id: string;
   object: string;
@@ -110,63 +116,83 @@ export function SettingsForm() {
 
   const onSaveSettings = () => SaveData(new Settings(key, organizationId, tokens, temperature, model));
 
+
   return (
-    <Paper
-      elevation={3}
-      style={{
-        display: 'grid',
-        gridRowGap: '20px',
-        padding: '20px',
-        height: '100%',
-      }}>
-      <Typography variant="h6">Options</Typography>
-
-      <TextField
-        variant="standard"
-        type="password"
-        label="API key"
-        inputRef={keyRef}
-        onChange={event => setKey(event.target.value)}
-      />
-
-      <Typography variant="h6">API Settings</Typography>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          width: '100%',
+    <Container>
+      <Paper
+        elevation={3}
+        style={{
+          display: 'grid',
+          gridRowGap: '20px',
+          padding: '20px',
+          height: '100%',
         }}>
+        <Typography variant="h6">Options</Typography>
+
         <TextField
-          sx={{ width: '32%' }}
           variant="standard"
-          label="Organization Id"
-          onChange={event => setOrganizationId(event.target.value)}
-          helperText={'Organization IDs can be found on your organization settings page. completion.'}
-          inputRef={organizationRef}
+          type="password"
+          label="API key"
+          inputRef={keyRef}
+          onChange={event => setKey(event.target.value)}
         />
-        <TextField
-          sx={{ width: '32%' }}
-          variant="standard"
-          type="number"
-          label="Max tokens"
-          onChange={event => setTokens(parseFloat(event.target.value))}
-          helperText="The maximum number of tokens to generate in the chat completion."
-          inputRef={tokenRef}
-        />
-        <TextField
-          sx={{ width: '32%' }}
-          variant="standard"
-          type="number"
-          label="Temperature"
-          onChange={event => setTemperature(parseFloat(event.target.value))}
-          helperText="What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the outpu more random, while lower values like 0.2 will make it more focused and deterministic."
-          inputRef={temperatureRef}
-        />
-      </Box>
-      <FormControl fullWidth>
-        <InputLabel id="ModelLabel">Model</InputLabel>
-        <Grid container>
-          <Grid item sx={{ width: '90%' }}>
+
+        <Typography variant="h6">API Settings</Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            width: '100%',
+          }}>
+          <TextField
+            sx={{ width: '32%' }}
+            variant="standard"
+            label="Organization Id"
+            onChange={event => setOrganizationId(event.target.value)}
+            helperText={'Organization IDs can be found on your organization settings page. completion.'}
+            inputRef={organizationRef}
+            FormHelperTextProps={{
+              style: {
+                padding: 0,
+              }
+            }}
+          />
+          <TextField
+            sx={{ width: '32%' }}
+            variant="standard"
+            type="number"
+            label="Max tokens"
+            onChange={event => setTokens(parseFloat(event.target.value))}
+            helperText="The maximum number of tokens to generate in the chat completion."
+            inputRef={tokenRef}
+            FormHelperTextProps={{
+              style: {
+                padding: 0,
+              }
+            }}
+
+          />
+          <TextField
+            sx={{ width: '32%' }}
+            variant="standard"
+            type="number"
+            label="Temperature"
+            onChange={event => setTemperature(parseFloat(event.target.value))}
+            helperText="What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic."
+            inputRef={temperatureRef}
+            FormHelperTextProps={{
+              style: {
+                padding: 0,
+              }
+            }}
+          />
+        </Box>
+        <FormControl fullWidth>
+          <InputLabel id="ModelLabel">Model</InputLabel>
+          <Box sx={{
+            width: 'inherit',
+            display: 'flex',
+          }}>
             <Select
               fullWidth
               error={!GptModels}
@@ -193,25 +219,26 @@ export function SettingsForm() {
                 </>
               )}
             </Select>
-          </Grid>
-          <Grid item alignItems="stretch" style={{ display: 'flex' }}>
             <Button variant="outlined" sx={{ mx: 2 }} onClick={() => FetchModels(key)}>
               Refresh
             </Button>
-          </Grid>
-        </Grid>
+          </Box>
 
-        {GptModels ? <></> : <FormHelperText>Error while loading models. Please check your API Key</FormHelperText>}
-      </FormControl>
+          {GptModels ? <></> : <FormHelperText>Error while loading models. Please check your API Key</FormHelperText>}
+        </FormControl>
 
-      <Button
-        variant="outlined"
-        sx={{
-          width: '50px',
+        <Button
+          variant="outlined"
+          sx={{
+            width: '50px',
+          }}
+          onClick={onSaveSettings}
+        >Save</Button>
+        <FormHelperText sx={{
+          p: 0
         }}
-        onClick={onSaveSettings}>
-        Save
-      </Button>
-    </Paper>
+        >Here's my helper text</FormHelperText>
+      </Paper>
+    </Container >
   );
 }
