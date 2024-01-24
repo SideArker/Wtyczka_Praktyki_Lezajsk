@@ -1,10 +1,21 @@
-import { IconButton, Button, Box, Container, TextField, Grid, FormControl, Paper, Typography, Drawer } from '@mui/material';
+import {
+  IconButton,
+  Button,
+  Box,
+  Container,
+  TextField,
+  Grid,
+  FormControl,
+  Paper,
+  Typography,
+  Drawer,
+} from '@mui/material';
 import React from 'react';
 import ChatMessage from './Message';
 import { useState, useEffect, useRef } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 import './Conversation.css';
-import ClearIcon from "@mui/icons-material/ClearOutlined";
+import ClearIcon from '@mui/icons-material/ClearOutlined';
 
 interface Message {
   text: string;
@@ -21,13 +32,16 @@ export default function Conversation() {
   const [userInput, setUserInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
 
+  let dataLoaded = false;
+
   const handleChange = e => {
     setUserInput(e.target.value);
   };
 
   const SendPrompt = async () => {
-    console.log("prompt", prompt);
+    console.log('prompt', prompt);
     if (prompt === '') return;
+    if (key === '') return;
     const userMessage: Message = { text: prompt, sender: 'user' };
     clearSearch();
     setMessages(prevMessages => [...prevMessages, userMessage]);
@@ -71,41 +85,41 @@ export default function Conversation() {
   useEffect(() => {
     const storage = chrome.storage.sync;
     storage.get('settingsData', function (data) {
-      setKey(data.settingsData.apiKey);
-      setOrganizationId(data.settingsData.organizationId);
-      setTokens(data.settingsData.tokensCount);
-      setTemperature(data.settingsData.temperature);
-      setModel(data.settingsData.modelId);
+      if (data.hasOwnProperty('settingsData')) {
+        setKey(data.settingsData.apiKey);
+        setOrganizationId(data.settingsData.organizationId);
+        setTokens(data.settingsData.tokensCount);
+        setTemperature(data.settingsData.temperature);
+        setModel(data.settingsData.modelId);
+        dataLoaded = true;
+      }
     });
   }, []);
 
-  const [prompt, setPromptText] = useState("");
+  const [prompt, setPromptText] = useState('');
 
   const clearSearch = () => {
-    setPromptText("");
+    setPromptText('');
   };
-  const filterResults = (e) => {
+  const filterResults = e => {
     setPromptText(e.target.value);
   };
 
   function keyPress(e) {
     if (e.keyCode == 13) {
       SendPrompt();
-      console.log("sending prompt");
+      console.log('sending prompt');
     }
   }
   return (
     <Container>
-      <Paper className='main'>
-
+      <Paper className="main">
         {messages.map((message, index) => {
           if (message.sender == 'user') {
             return <ChatMessage message={{ text: message.text, isUser: true }} />;
           } else return <ChatMessage message={{ text: message.text, isUser: false }} />;
         })}
         <span></span>
-
-
       </Paper>
       <Box className="form">
         <TextField
@@ -113,12 +127,16 @@ export default function Conversation() {
           value={prompt}
           onChange={filterResults}
           onKeyDown={keyPress}
+          color={!dataLoaded ? 'warning' : 'secondary'}
+          error={!dataLoaded}
+          label={!dataLoaded ? 'Error while loading data. Please check your settings' : ''}
+          focused
           InputProps={{
             endAdornment: (
               <IconButton onClick={clearSearch} edge="end">
                 <ClearIcon />
               </IconButton>
-            )
+            ),
           }}
           sx={{
             lineHeight: '1.5',
@@ -129,7 +147,6 @@ export default function Conversation() {
             outline: 'none',
             border: 'none',
           }}
-
         />
 
         <Button

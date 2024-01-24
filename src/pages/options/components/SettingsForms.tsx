@@ -17,9 +17,7 @@ import {
 } from '@mui/material';
 import { useState, useEffect, useRef } from 'react';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import './SettingsForm.css';
 import { red } from '@mui/material/colors';
-
 
 interface IModel {
   id: string;
@@ -89,8 +87,7 @@ export function SettingsForm() {
   function LoadData() {
     const storage = chrome.storage.sync;
     storage.get('settingsData', function (data) {
-      console.log(data);
-
+      if (!data.hasOwnProperty('settingsData')) return;
       FetchModels(data.settingsData.apiKey);
 
       setKey(data.settingsData.apiKey);
@@ -106,14 +103,15 @@ export function SettingsForm() {
       modelRef.current.value = data.settingsData.modelId;
 
       Validate();
+      return;
     });
   }
   function Validate() {
-    console.log(organizationId =="")
-    if (temperature == null) ErrorMessage("Set temperature.")
-    else if (tokens == null) ErrorMessage("Set number of tokens.")
-    else if (organizationId == "") ErrorMessage("Organization ID is empty.")
-    else if (key == "") ErrorMessage("API key is empty.")
+    console.log(organizationId == '');
+    if (temperature == null) ErrorMessage('Set temperature.');
+    else if (tokens == null) ErrorMessage('Set number of tokens.');
+    else if (organizationId == '') ErrorMessage('Organization ID is empty.');
+    else if (key == '') ErrorMessage('API key is empty.');
     else {
       ErrorMessage('');
       return true;
@@ -121,10 +119,9 @@ export function SettingsForm() {
     return false;
   }
   function Submit() {
-    if(Validate())
-    {
-      console.log(`saved: ${Validate()}`)
-      onSaveSettings()
+    if (Validate()) {
+      console.log(`saved: ${Validate()}`);
+      onSaveSettings();
     }
   }
   useEffect(() => {
@@ -136,7 +133,6 @@ export function SettingsForm() {
   };
 
   const onSaveSettings = () => SaveData(new Settings(key, organizationId, tokens, temperature, model));
-
 
   return (
     <Container>
@@ -156,7 +152,7 @@ export function SettingsForm() {
           label="API key"
           inputRef={keyRef}
           onChange={event => setKey(event.target.value)}
-          error={(key == "")}
+          error={key == ''}
         />
 
         <Typography variant="h6">API Settings</Typography>
@@ -176,9 +172,9 @@ export function SettingsForm() {
             FormHelperTextProps={{
               style: {
                 padding: 0,
-              }
+              },
             }}
-            error={(organizationId == "")}
+            error={organizationId == ''}
           />
           <TextField
             sx={{ width: '32%' }}
@@ -191,9 +187,9 @@ export function SettingsForm() {
             FormHelperTextProps={{
               style: {
                 padding: 0,
-              }
+              },
             }}
-            error={(tokens == null)}
+            error={tokens == null}
           />
           <TextField
             sx={{ width: '32%' }}
@@ -206,17 +202,18 @@ export function SettingsForm() {
             FormHelperTextProps={{
               style: {
                 padding: 0,
-              }
+              },
             }}
-            error={(temperature == null)}
+            error={temperature == null}
           />
         </Box>
         <FormControl fullWidth>
           <InputLabel id="ModelLabel">Model</InputLabel>
-          <Box sx={{
-            width: 'inherit',
-            display: 'flex',
-          }}>
+          <Box
+            sx={{
+              width: 'inherit',
+              display: 'flex',
+            }}>
             <Select
               fullWidth
               error={!GptModels}
@@ -258,13 +255,17 @@ export function SettingsForm() {
           }}
           onClick={Submit}
           // color={Validate() ? 'inherit' : 'error'}
-        >Save</Button>
-        <FormHelperText sx={{
-          p: 0,
-          color: 'error.main'
-        }}
-        >{errorMessage}</FormHelperText>
+        >
+          Save
+        </Button>
+        <FormHelperText
+          sx={{
+            p: 0,
+            color: 'error.main',
+          }}>
+          {errorMessage}
+        </FormHelperText>
       </Paper>
-    </Container >
+    </Container>
   );
 }
