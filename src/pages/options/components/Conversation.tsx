@@ -28,15 +28,10 @@ export default function Conversation() {
   const [tokens, setTokens] = useState(0);
   const [temperature, setTemperature] = useState(0);
   const [model, setModel] = useState('');
-
-  const [userInput, setUserInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversationHistory, setConversationHistory] = useState<Array<any>>([]);
 
-  let dataLoaded = false;
-
-  const handleChange = e => {
-    setUserInput(e.target.value);
-  };
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   const SendPrompt = async () => {
     console.log('prompt', prompt);
@@ -61,18 +56,28 @@ export default function Conversation() {
               content:
                 'You are a helpful assistant. Try to mainly speak in english unless prompted directly by a different language.',
             },
+            ...conversationHistory,
             {
               role: 'user',
-              content: `${userInput}`,
+              content: `${prompt}`,
             },
           ],
+          organization_id: organizationId,
+          max_tokens: tokens,
+          temperature: temperature,
         }),
       });
+      console.log(conversationHistory);
       if (response.ok) {
         const data: ChatCompletion = await response.json();
         const botMessage: Message = { text: data.choices[0].message.content, sender: 'assistant' };
         setMessages(prevMessages => [...prevMessages, botMessage]);
-        console.log(botMessage);
+
+        setConversationHistory(prevHistory => [
+          ...prevHistory,
+          { role: 'user', content: prompt },
+          { role: 'assistant', content: data.choices[0].message.content },
+        ]);
       } else {
         console.error('Error calling OpenAI API');
       }
@@ -91,7 +96,7 @@ export default function Conversation() {
         setTokens(data.settingsData.tokensCount);
         setTemperature(data.settingsData.temperature);
         setModel(data.settingsData.modelId);
-        dataLoaded = true;
+        setDataLoaded(true);
       }
     });
   }, []);
@@ -111,6 +116,7 @@ export default function Conversation() {
       console.log('sending prompt');
     }
   }
+
   return (
     <Container>
       <Paper className="main">
@@ -127,7 +133,6 @@ export default function Conversation() {
           value={prompt}
           onChange={filterResults}
           onKeyDown={keyPress}
-          color={!dataLoaded ? 'warning' : 'secondary'}
           error={!dataLoaded}
           label={!dataLoaded ? 'Error while loading data. Please check your settings' : ''}
           focused
