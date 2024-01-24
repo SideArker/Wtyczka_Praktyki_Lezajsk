@@ -1,9 +1,10 @@
-import { Button, Box, Container, TextField, Grid, FormControl, Paper, Typography, Drawer } from '@mui/material';
+import { IconButton, Button, Box, Container, TextField, Grid, FormControl, Paper, Typography, Drawer } from '@mui/material';
 import React from 'react';
 import ChatMessage from './Message';
 import { useState, useEffect, useRef } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 import './Conversation.css';
+import ClearIcon from "@mui/icons-material/ClearOutlined";
 
 interface Message {
   text: string;
@@ -25,8 +26,10 @@ export default function Conversation() {
   };
 
   const SendPrompt = async () => {
-    if (userInput === '') return;
-    const userMessage: Message = { text: userInput, sender: 'user' };
+    console.log("prompt", prompt);
+    if (prompt === '') return;
+    const userMessage: Message = { text: prompt, sender: 'user' };
+    clearSearch();
     setMessages(prevMessages => [...prevMessages, userMessage]);
 
     try {
@@ -76,23 +79,47 @@ export default function Conversation() {
     });
   }, []);
 
+  const [prompt, setPromptText] = useState("");
+
+  const clearSearch = () => {
+    setPromptText("");
+  };
+  const filterResults = (e) => {
+    setPromptText(e.target.value);
+  };
+
+  function keyPress(e) {
+    if (e.keyCode == 13) {
+      SendPrompt();
+      console.log("sending prompt");
+    }
+  }
   return (
     <Container>
       <Paper className='main'>
-        
-          {messages.map((message, index) => {
-            if (message.sender == 'user') {
-              return <ChatMessage message={{ text: message.text, isUser: true }} />;
-            } else return <ChatMessage message={{ text: message.text, isUser: false }} />;
-          })}
-          <span></span>
-        
+
+        {messages.map((message, index) => {
+          if (message.sender == 'user') {
+            return <ChatMessage message={{ text: message.text, isUser: true }} />;
+          } else return <ChatMessage message={{ text: message.text, isUser: false }} />;
+        })}
+        <span></span>
+
 
       </Paper>
       <Box className="form">
         <TextField
-          placeholder="say something nice"
-          onChange={handleChange}
+          placeholder="Say something nice"
+          value={prompt}
+          onChange={filterResults}
+          onKeyDown={keyPress}
+          InputProps={{
+            endAdornment: (
+              <IconButton onClick={clearSearch} edge="end">
+                <ClearIcon />
+              </IconButton>
+            )
+          }}
           sx={{
             lineHeight: '1.5',
             width: 'inherit',
@@ -102,6 +129,7 @@ export default function Conversation() {
             outline: 'none',
             border: 'none',
           }}
+
         />
 
         <Button
