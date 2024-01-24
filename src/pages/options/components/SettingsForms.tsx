@@ -65,6 +65,7 @@ export function SettingsForm() {
   const [tokens, setTokens] = useState(0);
   const [temperature, setTemperature] = useState(0);
   const [model, setModel] = useState('');
+  const [errorMessage, ErrorMessage] = useState('');
 
   const [GptModels, setGptModels] = useState([]);
 
@@ -103,9 +104,29 @@ export function SettingsForm() {
       tokenRef.current.value = data.settingsData.tokensCount;
       temperatureRef.current.value = data.settingsData.temperature;
       modelRef.current.value = data.settingsData.modelId;
+
+      Validate();
     });
   }
-
+  function Validate() {
+    console.log(organizationId =="")
+    if (temperature == null) ErrorMessage("Set temperature.")
+    else if (tokens == null) ErrorMessage("Set number of tokens.")
+    else if (organizationId == "") ErrorMessage("Organization ID is empty.")
+    else if (key == "") ErrorMessage("API key is empty.")
+    else {
+      ErrorMessage('');
+      return true;
+    }
+    return false;
+  }
+  function Submit() {
+    if(Validate())
+    {
+      console.log(`saved: ${Validate()}`)
+      onSaveSettings()
+    }
+  }
   useEffect(() => {
     LoadData();
   }, []);
@@ -135,6 +156,7 @@ export function SettingsForm() {
           label="API key"
           inputRef={keyRef}
           onChange={event => setKey(event.target.value)}
+          error={(key == "")}
         />
 
         <Typography variant="h6">API Settings</Typography>
@@ -156,6 +178,7 @@ export function SettingsForm() {
                 padding: 0,
               }
             }}
+            error={(organizationId == "")}
           />
           <TextField
             sx={{ width: '32%' }}
@@ -170,7 +193,7 @@ export function SettingsForm() {
                 padding: 0,
               }
             }}
-
+            error={(tokens == null)}
           />
           <TextField
             sx={{ width: '32%' }}
@@ -185,6 +208,7 @@ export function SettingsForm() {
                 padding: 0,
               }
             }}
+            error={(temperature == null)}
           />
         </Box>
         <FormControl fullWidth>
@@ -232,12 +256,14 @@ export function SettingsForm() {
           sx={{
             width: '50px',
           }}
-          onClick={onSaveSettings}
+          onClick={Submit}
+          // color={Validate() ? 'inherit' : 'error'}
         >Save</Button>
         <FormHelperText sx={{
-          p: 0
+          p: 0,
+          color: 'error.main'
         }}
-        >Here's my helper text</FormHelperText>
+        >{errorMessage}</FormHelperText>
       </Paper>
     </Container >
   );
