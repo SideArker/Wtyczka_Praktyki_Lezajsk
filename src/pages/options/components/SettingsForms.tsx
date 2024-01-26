@@ -60,8 +60,8 @@ export function SettingsForm() {
 
   const [key, setKey] = useState('');
   const [organizationId, setOrganizationId] = useState('');
-  const [tokens, setTokens] = useState(0);
-  const [temperature, setTemperature] = useState(0);
+  const [tokens, setTokens] = useState(-1);
+  const [temperature, setTemperature] = useState(-1);
   const [model, setModel] = useState('');
   const [errorMessage, ErrorMessage] = useState('');
 
@@ -107,8 +107,9 @@ export function SettingsForm() {
     });
   }
   function Validate() {
-    if (temperature == null) ErrorMessage('Set temperature.');
-    else if (tokens == null) ErrorMessage('Set number of tokens.');
+    console.log("tokens", tokens)
+    if (temperature == -1) ErrorMessage('Set temperature.');
+    else if (tokens == -1) ErrorMessage('Set number of tokens.');
     else if (organizationId == '') ErrorMessage('Organization ID is empty.');
     else if (key == '') ErrorMessage('API key is empty.');
     else {
@@ -187,7 +188,7 @@ export function SettingsForm() {
                 padding: 0,
               },
             }}
-            error={tokens == null}
+            error={tokens == -1}
           />
           <TextField
             sx={{ width: '32%' }}
@@ -202,7 +203,7 @@ export function SettingsForm() {
                 padding: 0,
               },
             }}
-            error={temperature == null}
+            error={temperature == -1}
           />
         </Box>
         <FormControl fullWidth>
