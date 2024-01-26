@@ -26,7 +26,6 @@ const Options: React.FC = () => {
   }
 
   const getCurrentPage = (page: Page) => {
-    console.log('Data received in parent:', page);
     setPage(page);
   };
 

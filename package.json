@@ -25,11 +25,11 @@
   },
   "type": "module",
   "dependencies": {
-    "@codemirror/lang-javascript": "^6.2.1",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.6",
-    "@mui/material": "^5.15.4",
+    "@uiw/codemirror-extensions-langs": "^4.21.21",
+   "@mui/material": "^5.15.4",
     "@uiw/react-codemirror": "^4.21.21",
     "construct-style-sheets-polyfill": "3.1.0",
     "openai": "^4.0.0",

@@ -33,8 +33,7 @@ export default function Conversation() {
 
   const [dataLoaded, setDataLoaded] = useState(false);
 
-  const SendPrompt = async () => {
-    console.log('prompt', prompt);
+  const sendPrompt = async () => {
     if (prompt === '') return;
     if (key === '') return;
     const userMessage: Message = { text: prompt, sender: 'user' };
@@ -111,8 +110,7 @@ export default function Conversation() {
 
   function keyPress(e) {
     if (e.keyCode == 13) {
-      SendPrompt();
-      console.log('sending prompt');
+      sendPrompt();
     }
   }
 
@@ -156,7 +154,7 @@ export default function Conversation() {
         <Button
           type="button"
           variant="contained"
-          onClick={SendPrompt}
+          onClick={sendPrompt}
           sx={{
             width: '20%',
             bgcolor: 'primary.main',

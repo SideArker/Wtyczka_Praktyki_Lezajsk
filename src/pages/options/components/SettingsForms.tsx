@@ -107,7 +107,6 @@ export function SettingsForm() {
     });
   }
   function Validate() {
-    console.log(organizationId == '');
     if (temperature == null) ErrorMessage('Set temperature.');
     else if (tokens == null) ErrorMessage('Set number of tokens.');
     else if (organizationId == '') ErrorMessage('Organization ID is empty.');
@@ -120,7 +119,6 @@ export function SettingsForm() {
   }
   function Submit() {
     if (Validate()) {
-      console.log(`saved: ${Validate()}`);
       onSaveSettings();
     }
   }
