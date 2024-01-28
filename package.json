@@ -27,12 +27,18 @@
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
-    "@mui/material": "^5.15.4",
+    "@mui/icons-material": "^5.15.6",
+    "@uiw/codemirror-extensions-langs": "^4.21.21",
+   "@mui/material": "^5.15.4",
+    "@uiw/react-codemirror": "^4.21.21",
     "construct-style-sheets-polyfill": "3.1.0",
+    "openai": "^4.0.0",
+    "pnpm": "^8.14.3",
     "prop-types": "^15.8.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.49.3",
+    "react-html-parser": "^2.0.2",
     "webextension-polyfill": "0.10.0"
   },
   "devDependencies": {

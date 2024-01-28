@@ -12,10 +12,12 @@ import {
   Button,
   FormHelperText,
   Grid,
+  Container,
+  makeStyles,
 } from '@mui/material';
 import { useState, useEffect, useRef } from 'react';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import openai from 'openai';
+import { red } from '@mui/material/colors';
 
 interface IModel {
   id: string;
@@ -55,11 +57,13 @@ export function SettingsForm() {
   const tokenRef = useRef(null);
   const temperatureRef = useRef(null);
   const modelRef = useRef(null);
+
   const [key, setKey] = useState('');
   const [organizationId, setOrganizationId] = useState('');
-  const [tokens, setTokens] = useState(0);
-  const [temperature, setTemperature] = useState(0);
+  const [tokens, setTokens] = useState(-1);
+  const [temperature, setTemperature] = useState(-1);
   const [model, setModel] = useState('');
+  const [errorMessage, ErrorMessage] = useState('');
 
   const [GptModels, setGptModels] = useState([]);
 
@@ -83,8 +87,7 @@ export function SettingsForm() {
   function LoadData() {
     const storage = chrome.storage.sync;
     storage.get('settingsData', function (data) {
-      console.log(data);
-
+      if (!data.hasOwnProperty('settingsData')) return;
       FetchModels(data.settingsData.apiKey);
 
       setKey(data.settingsData.apiKey);
@@ -98,9 +101,28 @@ export function SettingsForm() {
       tokenRef.current.value = data.settingsData.tokensCount;
       temperatureRef.current.value = data.settingsData.temperature;
       modelRef.current.value = data.settingsData.modelId;
+
+      Validate();
+      return;
     });
   }
-
+  function Validate() {
+    console.log("tokens", tokens)
+    if (temperature == -1) ErrorMessage('Set temperature.');
+    else if (tokens == -1) ErrorMessage('Set number of tokens.');
+    else if (organizationId == '') ErrorMessage('Organization ID is empty.');
+    else if (key == '') ErrorMessage('API key is empty.');
+    else {
+      ErrorMessage('');
+      return true;
+    }
+    return false;
+  }
+  function Submit() {
+    if (Validate()) {
+      onSaveSettings();
+    }
+  }
   useEffect(() => {
     LoadData();
   }, []);
@@ -109,67 +131,88 @@ export function SettingsForm() {
     setModel(event.target.value);
   };
 
-  function saveApiKey() {
-    setKey(keyRef.current.value);
-    SaveData(new Settings(key, organizationId, tokens, temperature, model));
-  }
-
   const onSaveSettings = () => SaveData(new Settings(key, organizationId, tokens, temperature, model));
 
   return (
-    <Paper
-      elevation={3}
-      style={{
-        display: 'grid',
-        gridRowGap: '20px',
-        padding: '20px',
-        height: '100%',
-      }}>
-      <Typography variant="h6">Options</Typography>
-
-      <TextField variant="standard" type="password" label="API key" inputRef={keyRef} />
-      <Button variant="outlined" sx={{ width: '50px' }} onClick={saveApiKey}>
-        Apply
-      </Button>
-
-      <Typography>API Settings</Typography>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          width: '100%',
+    <Container>
+      <Paper
+        elevation={3}
+        style={{
+          display: 'grid',
+          gridRowGap: '20px',
+          padding: '20px',
+          height: '100%',
         }}>
+        <Typography variant="h6">Options</Typography>
+
         <TextField
-          sx={{ width: '32%' }}
           variant="standard"
-          label="Organization Id"
-          onChange={event => setOrganizationId(event.target.value)}
-          helperText={'Organization IDs can be found on your organization settings page. completion.'}
-          inputRef={organizationRef}
+          type="password"
+          label="API key"
+          inputRef={keyRef}
+          onChange={event => setKey(event.target.value)}
+          error={key == ''}
         />
-        <TextField
-          sx={{ width: '32%' }}
-          variant="standard"
-          type="number"
-          label="Max tokens"
-          onChange={event => setTokens(parseFloat(event.target.value))}
-          helperText="The maximum number of tokens to generate in the chat completion."
-          inputRef={tokenRef}
-        />
-        <TextField
-          sx={{ width: '32%' }}
-          variant="standard"
-          type="number"
-          label="Temperature"
-          onChange={event => setTemperature(parseFloat(event.target.value))}
-          helperText="What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the outpu more random, while lower values like 0.2 will make it more focused and deterministic."
-          inputRef={temperatureRef}
-        />
-      </Box>
-      <FormControl fullWidth>
-        <InputLabel id="ModelLabel">Model</InputLabel>
-        <Grid container>
-          <Grid item sx={{ width: '90%' }}>
+
+        <Typography variant="h6">API Settings</Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            width: '100%',
+          }}>
+          <TextField
+            sx={{ width: '32%' }}
+            variant="standard"
+            label="Organization Id"
+            onChange={event => setOrganizationId(event.target.value)}
+            helperText={'Organization IDs can be found on your organization settings page. completion.'}
+            inputRef={organizationRef}
+            FormHelperTextProps={{
+              style: {
+                padding: 0,
+              },
+            }}
+            error={organizationId == ''}
+          />
+          <TextField
+            sx={{ width: '32%' }}
+            variant="standard"
+            type="number"
+            label="Max tokens"
+            onChange={event => setTokens(parseFloat(event.target.value))}
+            helperText="The maximum number of tokens to generate in the chat completion."
+            inputRef={tokenRef}
+            FormHelperTextProps={{
+              style: {
+                padding: 0,
+              },
+            }}
+            error={tokens == -1}
+          />
+          <TextField
+            sx={{ width: '32%' }}
+            variant="standard"
+            type="number"
+            label="Temperature"
+            onChange={event => setTemperature(parseFloat(event.target.value))}
+            helperText="What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic."
+            inputRef={temperatureRef}
+            FormHelperTextProps={{
+              style: {
+                padding: 0,
+              },
+            }}
+            error={temperature == -1}
+          />
+        </Box>
+        <FormControl fullWidth>
+          <InputLabel id="ModelLabel">Model</InputLabel>
+          <Box
+            sx={{
+              width: 'inherit',
+              display: 'flex',
+            }}>
             <Select
               fullWidth
               error={!GptModels}
@@ -196,25 +239,32 @@ export function SettingsForm() {
                 </>
               )}
             </Select>
-          </Grid>
-          <Grid item alignItems="stretch" style={{ display: 'flex' }}>
             <Button variant="outlined" sx={{ mx: 2 }} onClick={() => FetchModels(key)}>
               Refresh
             </Button>
-          </Grid>
-        </Grid>
+          </Box>
 
-        {GptModels ? <></> : <FormHelperText>Error while loading models. Please check your API Key</FormHelperText>}
-      </FormControl>
+          {GptModels ? <></> : <FormHelperText>Error while loading models. Please check your API Key</FormHelperText>}
+        </FormControl>
 
-      <Button
-        variant="outlined"
-        sx={{
-          width: '50px',
-        }}
-        onClick={onSaveSettings}>
-        Save
-      </Button>
-    </Paper>
+        <Button
+          variant="outlined"
+          sx={{
+            width: '50px',
+          }}
+          onClick={Submit}
+          // color={Validate() ? 'inherit' : 'error'}
+        >
+          Save
+        </Button>
+        <FormHelperText
+          sx={{
+            p: 0,
+            color: 'error.main',
+          }}>
+          {errorMessage}
+        </FormHelperText>
+      </Paper>
+    </Container>
   );
 }
